@@ -174,7 +174,8 @@ textarea:focus { border-color: var(--sage); }
   padding: 20px; box-shadow: var(--shadow);
 }
 .card-label { font-size: 12px; letter-spacing: .04em; color: var(--sage-dark); font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-.card-question-text { font-family: var(--serif); font-size: 19px; line-height: 1.6; font-weight: 500; margin-bottom: 16px; color: var(--ink); }
+.card-mission-text { font-family: var(--serif); font-size: 18px; line-height: 1.6; font-weight: 500; }
+.card-question-text { font-family: var(--serif); font-size: 16.5px; line-height: 1.65; margin-bottom: 16px; color: var(--ink); }
 
 #answerForm textarea { margin-bottom: 12px; }
 .answer-done { display: flex; gap: 10px; align-items: flex-start; background: var(--sage-lighter); border-radius: var(--radius-sm); padding: 14px; }

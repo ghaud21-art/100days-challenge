@@ -27,7 +27,13 @@ function api(action, payload) {
 
 /* ============ 목업 API (백엔드 미연결 시 화면 확인용) ============ */
 const MOCK_SAMPLE_MISSIONS = [
-  '요즘 나는 무엇에 가장 많은 시간을 쓰고 있는지', '요즘을 자주 하는 생각은?', '오늘 내 기분을 한 단어로 표현한다면?',
+  '미온수 한 잔으로 아침 시작', '오늘 먹은 음식 기록하기', '식사 전 물 한 컵 마시기',
+  '채소 가득한 식단 챙기기', '20분 이상 천천히 식사하기', '야식 대신 따뜻한 차 마시기',
+  '거울 속 내 모습 칭찬하기', '가벼운 스트레칭 15분', '계단으로 3층 이상 오르기', '정제 탄수화물 하루 줄이기'
+];
+// "오늘의 생각할 거리"는 업로드한 카드(미션)와 별개로 고정된 질문 목록을 쓴다. (목업용 일부)
+const MOCK_THOUGHT_QUESTIONS = [
+  '요즘 나는 무엇에 가장 많은 시간을 쓰고 있는지', '요즘 가장 자주 하는 생각은?', '오늘 내 기분을 한 단어로 표현한다면?',
   '요즘 천천히 해도 될 일은?', '최근 나도 모르게 웃었던 순간은?', '계속 미루고 있는 일은 무엇이고, 왜 손이 가지 않을까?',
   '지금 나에게 "그래도 괜찮아" 말해 주고 싶은 일이 있다면?', '100일 뒤, 지금과 달라져 있으면 좋겠는 한 가지는?',
   '하루 중 내가 가장 좋아하는 시간은?', '요즘 자꾸 눈길이 가는 색이나 물건은?'
@@ -87,8 +93,8 @@ function mockApi(action, p) {
     db.answers[user.userId] = db.answers[user.userId] || {};
     let rec = db.answers[user.userId][day];
     if (!rec) {
-      // "생각할 거리"는 업로드한 카드의 그날 문항을 그대로 사용한다(AI로 새로 생성하지 않음).
-      rec = { day, missionText, question: missionText, answer: '' };
+      const question = MOCK_THOUGHT_QUESTIONS[(day - 1) % MOCK_THOUGHT_QUESTIONS.length];
+      rec = { day, missionText, question, answer: '' };
       db.answers[user.userId][day] = rec;
       mockSave_(db);
     }
@@ -317,7 +323,8 @@ async function enterHome() {
   $('homeChallengeTitle').textContent = res.challengeTitle || '챌린지';
   $('homeDate').textContent = todayLabel();
   $('homeDayBadge').innerHTML = `Day ${res.day}<span>/${res.totalDays}</span>`;
-  $('homeQuestionText').textContent = res.question || res.missionText || '';
+  $('homeMissionText').textContent = res.missionText || '오늘의 미션이 없어요';
+  $('homeQuestionText').textContent = res.question || '';
   $('letterArrived').classList.add('hidden');
 
   if (res.answered) {
