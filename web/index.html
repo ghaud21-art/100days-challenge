@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>100일의 편지</title>
+<meta name="description" content="100일 챌린지를 하루하루 기록하고, 이정표마다 미래의 나에게서 편지를 받는 자기성찰 웹앱">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%237C9678'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- 아이콘 스프라이트 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ic-clover" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(50,46)">
+          <g>
+            <path d="M0,0 C-22,-6 -23,-33 0,-38 C23,-33 22,-6 0,0 Z"/>
+            <path d="M0,-4 C0,-16 0,-27 0,-35" opacity="0.5"/>
+          </g>
+          <g transform="rotate(90)">
+            <path d="M0,0 C-22,-6 -23,-33 0,-38 C23,-33 22,-6 0,0 Z"/>
+            <path d="M0,-4 C0,-16 0,-27 0,-35" opacity="0.5"/>
+          </g>
+          <g transform="rotate(180)">
+            <path d="M0,0 C-22,-6 -23,-33 0,-38 C23,-33 22,-6 0,0 Z"/>
+            <path d="M0,-4 C0,-16 0,-27 0,-35" opacity="0.5"/>
+          </g>
+          <g transform="rotate(270)">
+            <path d="M0,0 C-22,-6 -23,-33 0,-38 C23,-33 22,-6 0,0 Z"/>
+            <path d="M0,-4 C0,-16 0,-27 0,-35" opacity="0.5"/>
+          </g>
+        </g>
+        <path d="M50,58 C50,72 50,82 50,92" transform="translate(0,-12)"/>
+      </g>
+    </symbol>
+    <symbol id="ic-home" viewBox="0 0 24 24">
+      <path d="M4 11.5 12 4l8 7.5M6 10v9h5v-5h2v5h5v-9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-mail" viewBox="0 0 24 24">
+      <rect x="3.5" y="5.5" width="17" height="13" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M4.5 6.5 12 12.5l7.5-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-grid" viewBox="0 0 24 24">
+      <rect x="3.5" y="3.5" width="7" height="7" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <rect x="13.5" y="3.5" width="7" height="7" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <rect x="3.5" y="13.5" width="7" height="7" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <rect x="13.5" y="13.5" width="7" height="7" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="ic-upload" viewBox="0 0 24 24">
+      <path d="M12 15V4M12 4 7.5 8.5M12 4l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24">
+      <path d="M4.5 12.5 9.5 17.5 19.5 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-back" viewBox="0 0 24 24">
+      <path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-lock" viewBox="0 0 24 24">
+      <rect x="5.5" y="10.5" width="13" height="9" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app">
+
+  <!-- ===== 로그인 / 회원가입 ===== -->
+  <section id="screen-auth" class="screen">
+    <div class="auth-wrap">
+      <div class="brand">
+        <svg class="brand-clover" viewBox="0 0 100 100"><use href="#ic-clover"/></svg>
+        <h1 class="brand-title">100일의 편지</h1>
+        <p class="brand-sub">오늘을 기록하면, 미래의 내가 답장합니다</p>
+      </div>
+
+      <div class="tabbar-pill" role="tablist">
+        <button class="pill active" id="tabLogin" role="tab">로그인</button>
+        <button class="pill" id="tabSignup" role="tab">회원가입</button>
+      </div>
+
+      <form id="formLogin" class="auth-form">
+        <label class="field">
+          <span>아이디</span>
+          <input type="text" id="loginUsername" autocomplete="username" required>
+        </label>
+        <label class="field">
+          <span>비밀번호</span>
+          <input type="password" id="loginPassword" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">로그인</button>
+      </form>
+
+      <form id="formSignup" class="auth-form hidden">
+        <label class="field">
+          <span>이름</span>
+          <input type="text" id="signupName" required>
+        </label>
+        <label class="field">
+          <span>아이디</span>
+          <input type="text" id="signupUsername" autocomplete="username" required>
+        </label>
+        <label class="field">
+          <span>비밀번호</span>
+          <input type="password" id="signupPassword" autocomplete="new-password" required>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">회원가입</button>
+      </form>
+
+      <p class="auth-msg" id="authMsg"></p>
+    </div>
+  </section>
+
+  <!-- ===== 온보딩: 이미지 업로드 ===== -->
+  <section id="screen-onboard-upload" class="screen">
+    <header class="topbar">
+      <span class="topbar-title">챌린지 카드 등록</span>
+    </header>
+    <div class="onboard-wrap">
+      <svg class="onboard-clover" viewBox="0 0 100 100"><use href="#ic-clover"/></svg>
+      <h2 class="onboard-title">100일 챌린지 카드를<br>업로드해 주세요</h2>
+      <p class="onboard-desc">카드 이미지를 올리면 100개의 미션을 자동으로 읽어드려요.<br>인식 결과는 다음 화면에서 직접 확인하고 고칠 수 있어요.</p>
+
+      <label class="upload-box" id="uploadBox">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <svg class="upload-icon"><use href="#ic-upload"/></svg>
+        <span id="uploadLabel">이미지 선택하기</span>
+      </label>
+
+      <img id="uploadPreview" class="upload-preview hidden" alt="업로드한 챌린지 카드 미리보기">
+
+      <button id="btnExtract" class="btn btn-primary btn-block" disabled>미션 인식하기</button>
+      <p class="onboard-msg" id="onboardUploadMsg"></p>
+    </div>
+  </section>
+
+  <!-- ===== 온보딩: 인식 결과 확인/수정 ===== -->
+  <section id="screen-onboard-edit" class="screen">
+    <header class="topbar">
+      <button class="icon-btn" id="btnBackToUpload"><svg><use href="#ic-back"/></svg></button>
+      <span class="topbar-title">인식 결과 확인</span>
+    </header>
+    <div class="edit-wrap">
+      <label class="field">
+        <span>챌린지 제목</span>
+        <input type="text" id="editTitle">
+      </label>
+      <label class="field">
+        <span>시작일 (Day 1)</span>
+        <input type="date" id="editStartDate">
+      </label>
+      <p class="edit-desc">인식이 틀린 항목이 있다면 바로 고쳐 주세요. 100개 모두 채워져야 시작할 수 있어요.</p>
+      <div class="mission-list" id="missionList"></div>
+      <button id="btnSaveMissions" class="btn btn-primary btn-block">저장하고 시작하기</button>
+      <p class="onboard-msg" id="onboardEditMsg"></p>
+    </div>
+  </section>
+
+  <!-- ===== 홈: 오늘의 미션 ===== -->
+  <section id="screen-home" class="screen">
+    <header class="topbar topbar-home">
+      <div>
+        <p class="home-title" id="homeChallengeTitle">챌린지</p>
+        <p class="home-date" id="homeDate"></p>
+      </div>
+      <div class="day-badge" id="homeDayBadge">Day 1<span>/100</span></div>
+    </header>
+
+    <div class="home-wrap">
+      <section class="card card-question">
+        <p class="card-label">오늘의 생각할 거리</p>
+        <p class="card-question-text" id="homeQuestionText">—</p>
+
+        <div id="answerForm">
+          <textarea id="answerInput" rows="5" placeholder="오늘의 생각을 편하게 적어 보세요"></textarea>
+          <button id="btnSubmitAnswer" class="btn btn-primary btn-block">오늘의 기록 남기기</button>
+        </div>
+
+        <div id="answerDone" class="answer-done hidden">
+          <svg class="done-check"><use href="#ic-check"/></svg>
+          <p id="answerDoneText"></p>
+        </div>
+      </section>
+
+      <div id="letterArrived" class="letter-arrived hidden">
+        <svg class="letter-arrived-icon" viewBox="0 0 100 100"><use href="#ic-clover"/></svg>
+        <p>미래의 나에게서 편지가 도착했어요</p>
+        <button id="btnGoLetter" class="btn btn-outline">편지 읽으러 가기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 편지함 ===== -->
+  <section id="screen-letters" class="screen">
+    <header class="topbar">
+      <span class="topbar-title">편지함</span>
+    </header>
+    <div class="letters-wrap" id="lettersWrap"></div>
+  </section>
+
+  <!-- ===== 진행현황 ===== -->
+  <section id="screen-progress" class="screen">
+    <header class="topbar">
+      <span class="topbar-title">진행현황</span>
+    </header>
+    <div class="progress-wrap">
+      <p class="progress-summary" id="progressSummary"></p>
+      <div class="progress-grid" id="progressGrid"></div>
+      <div class="progress-legend">
+        <span><i class="dot dot-done"></i> 완료</span>
+        <span><i class="dot dot-today"></i> 오늘</span>
+        <span><svg class="legend-clover" viewBox="0 0 100 100"><use href="#ic-clover"/></svg> 이정표</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 편지 상세 모달 ===== -->
+  <div id="letterModal" class="modal hidden">
+    <div class="modal-backdrop" id="letterModalBackdrop"></div>
+    <div class="letter-sheet">
+      <button class="icon-btn modal-close" id="letterModalClose"><svg><use href="#ic-back"/></svg></button>
+      <p class="letter-sheet-day" id="letterSheetDay"></p>
+      <div class="letter-sheet-body" id="letterSheetBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== 하단 내비게이션 ===== -->
+  <nav id="bottomNav" class="bottom-nav hidden">
+    <button class="nav-btn active" data-route="home"><svg><use href="#ic-home"/></svg><span>홈</span></button>
+    <button class="nav-btn" data-route="letters"><svg><use href="#ic-mail"/></svg><span>편지함</span></button>
+    <button class="nav-btn" data-route="progress"><svg><use href="#ic-grid"/></svg><span>진행현황</span></button>
+  </nav>
+
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="loadingOverlay" class="loading-overlay hidden">
+  <svg class="loading-clover" viewBox="0 0 100 100"><use href="#ic-clover"/></svg>
+  <p id="loadingText">불러오는 중…</p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
