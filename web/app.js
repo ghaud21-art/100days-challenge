@@ -47,16 +47,18 @@ function mockApi(action, p) {
   const delay = (v) => new Promise(res => setTimeout(() => res(v), 260));
 
   if (action === 'signup') {
-    if (db.users[p.username]) return delay({ ok: false, error: '이미 사용 중인 아이디입니다.' });
+    if (db.users[p.sid]) return delay({ ok: false, error: '이미 등록된 학번입니다. 로그인해 주세요.' });
+    if (!/^\d{4,}$/.test(String(p.pin || ''))) return delay({ ok: false, error: 'PIN 번호는 숫자 4자리 이상이어야 합니다.' });
     const userId = 'u_' + Date.now();
     const token = 'tok_' + Math.random().toString(36).slice(2);
-    db.users[p.username] = { userId, token, name: p.name, username: p.username, password: p.password, challengeTitle: '', startDate: '' };
+    db.users[p.sid] = { userId, token, name: p.name, sid: p.sid, pin: p.pin, challengeTitle: '', startDate: '' };
     mockSave_(db);
     return delay({ ok: true, userId, token, name: p.name });
   }
   if (action === 'login') {
-    const u = db.users[p.username];
-    if (!u || u.password !== p.password) return delay({ ok: false, error: '아이디 또는 비밀번호가 올바르지 않습니다.' });
+    const u = db.users[p.sid];
+    if (!u || u.name !== p.name) return delay({ ok: false, error: '학번 또는 이름을 확인해 주세요.' });
+    if (u.pin !== p.pin) return delay({ ok: false, error: 'PIN 번호가 올바르지 않습니다.' });
     return delay({ ok: true, userId: u.userId, token: u.token, name: u.name });
   }
 
@@ -180,10 +182,11 @@ function switchAuthTab(which) {
 
 $('formLogin').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const username = $('loginUsername').value.trim();
-  const password = $('loginPassword').value;
+  const sid = $('loginSid').value.trim();
+  const name = $('loginName').value.trim();
+  const pin = $('loginPin').value.trim();
   showLoading('로그인 중…');
-  const res = await api('login', { username, password });
+  const res = await api('login', { sid, name, pin });
   hideLoading();
   if (!res.ok) { $('authMsg').textContent = res.error || '로그인에 실패했습니다.'; return; }
   setAuth({ userId: res.userId, token: res.token, name: res.name });
@@ -192,11 +195,11 @@ $('formLogin').addEventListener('submit', async (e) => {
 
 $('formSignup').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const sid = $('signupSid').value.trim();
   const name = $('signupName').value.trim();
-  const username = $('signupUsername').value.trim();
-  const password = $('signupPassword').value;
+  const pin = $('signupPin').value.trim();
   showLoading('가입 중…');
-  const res = await api('signup', { name, username, password });
+  const res = await api('signup', { sid, name, pin });
   hideLoading();
   if (!res.ok) { $('authMsg').textContent = res.error || '가입에 실패했습니다.'; return; }
   setAuth({ userId: res.userId, token: res.token, name: res.name });

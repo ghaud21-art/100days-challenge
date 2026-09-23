@@ -69,7 +69,7 @@ function ensureUsersSheet_(ss) {
   if (ss.getSheetByName('사용자')) return;
   var sh = ss.insertSheet('사용자');
   sh.getRange(1, 1, 1, 8).setValues([
-    ['사용자ID', '아이디', '비밀번호해시', '솔트', '이름', '챌린지제목', '시작일', '세션토큰']
+    ['사용자ID', '학번', 'PIN해시', '솔트', '이름', '챌린지제목', '시작일', '세션토큰']
   ]);
   sh.setColumnWidths(1, 8, 140);
 }
@@ -141,25 +141,25 @@ function hashPw_(pw, salt) {
 /* ============================ 인증 ============================ */
 
 function apiSignup_(p) {
-  var username = String(p.username || '').trim();
-  var pw = String(p.password || '');
+  var sid = String(p.sid || '').trim();
   var name = String(p.name || '').trim();
-  if (!username || !pw || !name) return { ok: false, error: '아이디, 비밀번호, 이름을 모두 입력해 주세요.' };
-  if (pw.length < 4) return { ok: false, error: '비밀번호는 4자 이상이어야 합니다.' };
+  var pin = String(p.pin || '').trim();
+  if (!sid || !name || !pin) return { ok: false, error: '학번, 이름, PIN 번호를 모두 입력해 주세요.' };
+  if (!/^\d{4,}$/.test(pin)) return { ok: false, error: 'PIN 번호는 숫자 4자리 이상이어야 합니다.' };
 
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     var users = readRows_('사용자');
-    var dup = users.some(function (u) { return u['아이디'] === username; });
-    if (dup) return { ok: false, error: '이미 사용 중인 아이디입니다.' };
+    var dup = users.some(function (u) { return u['학번'] === sid; });
+    if (dup) return { ok: false, error: '이미 등록된 학번입니다. 로그인해 주세요.' };
 
     var salt = Utilities.getUuid();
-    var hash = hashPw_(pw, salt);
+    var hash = hashPw_(pin, salt);
     var userId = newId_();
     var token = Utilities.getUuid();
     var s = sh_('사용자');
-    s.appendRow([userId, username, hash, salt, name, '', '', token]);
+    s.appendRow([userId, sid, hash, salt, name, '', '', token]);
     return { ok: true, userId: userId, token: token, name: name };
   } finally {
     lock.releaseLock();
@@ -167,13 +167,14 @@ function apiSignup_(p) {
 }
 
 function apiLogin_(p) {
-  var username = String(p.username || '').trim();
-  var pw = String(p.password || '');
+  var sid = String(p.sid || '').trim();
+  var name = String(p.name || '').trim();
+  var pin = String(p.pin || '').trim();
   var users = readRows_('사용자');
-  var row = users.find(function (u) { return u['아이디'] === username; });
-  if (!row) return { ok: false, error: '아이디 또는 비밀번호가 올바르지 않습니다.' };
-  var hash = hashPw_(pw, row['솔트']);
-  if (hash !== row['비밀번호해시']) return { ok: false, error: '아이디 또는 비밀번호가 올바르지 않습니다.' };
+  var row = users.find(function (u) { return u['학번'] === sid && u['이름'] === name; });
+  if (!row) return { ok: false, error: '학번 또는 이름을 확인해 주세요.' };
+  var hash = hashPw_(pin, row['솔트']);
+  if (hash !== row['PIN해시']) return { ok: false, error: 'PIN 번호가 올바르지 않습니다.' };
 
   var token = Utilities.getUuid();
   var s = sh_('사용자');
