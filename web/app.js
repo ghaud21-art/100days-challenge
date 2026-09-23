@@ -207,7 +207,7 @@ $('formSignup').addEventListener('submit', async (e) => {
 });
 
 /* ============ 온보딩: 업로드 ============ */
-let uploadedImage = null; // { base64, mimeType }
+let uploadedImage = null; // { imageBase64, mimeType }
 
 $('uploadBox').addEventListener('click', (e) => {});
 $('fileInput').addEventListener('change', async (e) => {
@@ -216,7 +216,7 @@ $('fileInput').addEventListener('change', async (e) => {
   $('uploadLabel').textContent = '이미지 처리 중…';
   try {
     uploadedImage = await resizeImageToBase64(file);
-    $('uploadPreview').src = 'data:' + uploadedImage.mimeType + ';base64,' + uploadedImage.base64;
+    $('uploadPreview').src = 'data:' + uploadedImage.mimeType + ';base64,' + uploadedImage.imageBase64;
     $('uploadPreview').classList.remove('hidden');
     $('uploadLabel').textContent = '다른 이미지 선택하기';
     $('btnExtract').disabled = false;
@@ -245,7 +245,7 @@ function resizeImageToBase64(file) {
         canvas.width = width; canvas.height = height;
         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        resolve({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg' });
+        resolve({ imageBase64: dataUrl.split(',')[1], mimeType: 'image/jpeg' });
       };
       img.src = reader.result;
     };
